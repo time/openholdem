@@ -953,6 +953,8 @@ void CScraper::ScrapeButtons(HDC hdcCompatible, HDC hdc)
 	STablemapRegion		handle, slider;
 	POINT				handle_xy = {0};
 	CTransform			trans;
+	BOOL text_known;
+	BOOL button_label_exists;
 
 	// init locals
 	handle.name = "";
@@ -1032,6 +1034,10 @@ void CScraper::ScrapeButtons(HDC hdcCompatible, HDC hdc)
 		// Button label
 		// First check iXlabel
 		text = "";
+
+		text_known = FALSE;
+		button_label_exists = FALSE;
+
 		r$index = p_tablemap->r$indexes()->r$iXlabel_index[j];
 		if (r$index!=-1)
 		{
@@ -1040,14 +1046,17 @@ void CScraper::ScrapeButtons(HDC hdcCompatible, HDC hdc)
 			trans.DoTransform(&(p_tablemap->r$()->GetAt(r$index)), hdcCompatible, &text);
 			SelectObject(hdcCompatible, old_bitmap);
 
+			button_label_exists = TRUE;
+			text_known = IsAnyKnownString(text);
+
 			EnterCriticalSection(&cs_scraper);
-				if (text!="")
+				if (text_known)
 					_button_label[j] = text;
 			LeaveCriticalSection(&cs_scraper);
 		}
 
 		// Second check iXlabelY
-		for (k=0; k<=9 && text == ""; k++)
+		for (k=0; k<=9 && !text_known; k++)
 		{
 			r$index = p_tablemap->r$indexes()->r$iXlabelY_index[j][k];
 			if (r$index!=-1)
@@ -1057,11 +1066,20 @@ void CScraper::ScrapeButtons(HDC hdcCompatible, HDC hdc)
 				trans.DoTransform(&(p_tablemap->r$()->GetAt(r$index)), hdcCompatible, &text);
 				SelectObject(hdcCompatible, old_bitmap);
 
+				button_label_exists = TRUE;
+				text_known = IsAnyKnownString(text);
+
 				EnterCriticalSection(&cs_scraper);
-					if (text!="")
+					if (text_known)
 						_button_label[j] = text;
 				LeaveCriticalSection(&cs_scraper);
 			}
+		}
+
+		if (button_label_exists && !text_known)
+		{
+			// The button have label regions defined but none transformed to a known text, so we disable the default action
+			_button_label[j] = "";
 		}
 
 		EnterCriticalSection(&cs_scraper);
@@ -2290,3 +2308,27 @@ const bool CScraper::IsStringDealer(CString s)
 
 	return false;
 }
+
+const bool CScraper::IsAnyKnownString(CString s)
+{
+	// Check for bad parameters
+	if (!s || s == "")
+		return false;
+
+	return (
+		IsStringAllin(s) ||
+		IsStringRaise(s) ||
+		IsStringCall(s) ||
+		IsStringCheck(s) ||
+		IsStringFold(s) ||
+		IsStringAutopost(s) ||
+		IsStringSitin(s) ||
+		IsStringSitout(s) ||
+		IsStringLeave(s) ||
+		IsStringPrefold(s) ||
+		IsStringSeated(s) ||
+		IsStringActive(s) ||
+		IsStringCardback(s) ||
+		IsStringDealer(s)
+	);
+};

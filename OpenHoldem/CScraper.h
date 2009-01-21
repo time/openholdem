@@ -67,6 +67,7 @@ public:
 	const bool IsStringActive(const CString s);
 	const bool IsStringCardback(const CString s);
 	const bool IsStringDealer(const CString s);
+	const bool IsAnyKnownString(const CString s);
 
 public:
 	// public accessors
