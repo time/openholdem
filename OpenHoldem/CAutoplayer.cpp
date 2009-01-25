@@ -462,13 +462,19 @@ void CAutoplayer::DoSwag(void)
 
 			for (i=0; i<(int) strlen(ch_str); i++)
 			{
-				if (ch_str[i]>='0' && ch_str[i]<='9')
+				switch (ch_str[i])
 				{
-					vkey = ch_str[i];
-				}
-				if (ch_str[i]=='.')
-				{
-					vkey = VK_DECIMAL;
+				case '0': vkey = VK_NUMPAD0; break;
+				case '1': vkey = VK_NUMPAD1; break;
+				case '2': vkey = VK_NUMPAD2; break;
+				case '3': vkey = VK_NUMPAD3; break;
+				case '4': vkey = VK_NUMPAD4; break;
+				case '5': vkey = VK_NUMPAD5; break;
+				case '6': vkey = VK_NUMPAD6; break;
+				case '7': vkey = VK_NUMPAD7; break;
+				case '8': vkey = VK_NUMPAD8; break;
+				case '9': vkey = VK_NUMPAD9; break;
+				case '.': vkey = VK_DECIMAL; break;
 				}
 
 				ZeroMemory(&input[input_count],sizeof(INPUT));
