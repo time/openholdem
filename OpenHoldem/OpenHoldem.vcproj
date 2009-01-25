@@ -164,6 +164,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="/LTCG"
 				AdditionalDependencies="imm32.lib psapi.lib ..\dbghelp\dbghelp.lib ..\scintilla\bin\SciLexer.lib ..\pokereval\Release\poker-eval.lib ..\lib\libpq.lib ..\lib\PerlEz.lib"
 				OutputFile="$(OutDir)\OpenHoldem.exe"
 				LinkIncremental="1"
